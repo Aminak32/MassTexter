@@ -27,39 +27,63 @@ public class SendMessage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_message);
         findViews();
-//        ContactsContract.CommonDataKinds.Phone.NUMBER
-        Cursor groupCursor = getContentResolver().query(
-        ContactsContract.Data.CONTENT_URI,
-        new String[]{ ContactsContract.CommonDataKinds.GroupMembership.CONTACT_ID},
-        ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID + "= ?" + " AND "
-                + ContactsContract.CommonDataKinds.GroupMembership.MIMETYPE + "='"
-                + ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE + "'",
-        new String[] { getIntent().getStringExtra(EXTRA_GROUP_ID) }, null);
+        addContactsByGroup(getIntent().getStringExtra(EXTRA_GROUP_ID));
+        setUp();
+    }
 
-        if(groupCursor!=null){
-            while(groupCursor.moveToNext()){
+    /***
+     * Find the views that are associated with this layout
+     */
+    private void findViews() {
+        lstContacts = (ListView)findViewById(R.id.lstContacts);
+    }
 
-                String contactId = groupCursor.getString(0);
-                Cursor contactCursor = getContentResolver().query(
-                        ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
-                        ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
-                        new String[] { contactId }, null);
-
-                if(contactCursor != null) {
-                    while(contactCursor.moveToNext()) {
-                        contacts.add(new Contact(contactId, contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)),  contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))));
-                    }
-                    contactCursor.close();
-                }
-            }
-            groupCursor.close();
-        }
-
+    /***
+     * Setup the list adapter
+     */
+    private void setUp() {
         adapter = new ArrayAdapter<Contact>(this, android.R.layout.simple_list_item_1, contacts);
         lstContacts.setAdapter(adapter);
     }
 
-    private void findViews() {
-        lstContacts = (ListView)findViewById(R.id.lstContacts);
+    /***
+     * Given a group id it will query for the contact ids in that group
+     * From that result it will query for users by id and add them to the objects contacts variable
+     * @param groupId is the id of the group to add the users by
+     */
+    private void addContactsByGroup(String groupId) {
+        Cursor contactInGroupCursor = getContentResolver().query(
+                ContactsContract.Data.CONTENT_URI,
+                new String[]{ ContactsContract.CommonDataKinds.GroupMembership.CONTACT_ID},
+                ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID + "= ?" + " AND "
+                        + ContactsContract.CommonDataKinds.GroupMembership.MIMETYPE + "='"
+                        + ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE + "'",
+                new String[] {groupId}, null);
+
+        if(contactInGroupCursor!=null){
+            while(contactInGroupCursor.moveToNext()){
+                String contactId = contactInGroupCursor.getString(0);
+                addContactsById(contactId);
+            }
+            contactInGroupCursor.close();
+        }
+    }
+
+    /***
+     * Adds all the contacts associated with the given contact id to the objects contacts array
+     * @param contactId is the id of thed contact
+     */
+    private void addContactsById(String contactId) {
+        Cursor contactCursor = getContentResolver().query(
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                new String[] { contactId }, null);
+
+        if(contactCursor != null) {
+            while(contactCursor.moveToNext()) {
+                contacts.add(new Contact(contactId, contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)),  contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))));
+            }
+            contactCursor.close();
+        }
     }
 }
