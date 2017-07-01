@@ -1,19 +1,20 @@
-package lettieri.masstexter;
+package lettieri.masstexter.activities;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.telephony.SmsManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+
+import lettieri.masstexter.Group;
+import lettieri.masstexter.R;
 
 public class MainActivity extends AppCompatActivity {
     private ArrayList<Group> groups = new ArrayList<>();
@@ -48,28 +49,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Group selected = (Group)lstGroups.getItemAtPosition(position);
-                Toast.makeText(MainActivity.this, selected.toString(), Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(MainActivity.this, SendMessage.class);
+                intent.putExtra(SendMessage.EXTRA_GROUP_ID, selected.getId());
+                startActivity(intent);
             }
         });
-
-//        Cursor groupCursor = getContentResolver().query(
-//                ContactsContract.Data.CONTENT_URI,
-//                new String[]{ ContactsContract.Contacts.DISPLAY_NAME, ContactsContract.CommonDataKinds.GroupMembership.CONTACT_ID },
-//                ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID + "= ?" + " AND "
-//                        + ContactsContract.CommonDataKinds.GroupMembership.MIMETYPE + "='"
-//                        + ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE + "'",
-//                new String[] { String.valueOf(24) }, null);
-//
-//        if(groupCursor!=null){
-//            while(groupCursor.moveToNext()){
-//                String group_title = groupCursor.getString(0);
-//                String id = groupCursor.getString(1);
-//                // groups.put(id, group_title);
-//            Log.v("TOMTOM", group_title + " - " + id);
-//
-//            }
-//        }
-
     }
 
     private void findViews() {
