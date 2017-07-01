@@ -27,10 +27,10 @@ public class SendMessage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_message);
         findViews();
-
+//        ContactsContract.CommonDataKinds.Phone.NUMBER
         Cursor groupCursor = getContentResolver().query(
         ContactsContract.Data.CONTENT_URI,
-        new String[]{ ContactsContract.CommonDataKinds.GroupMembership.CONTACT_ID, ContactsContract.Contacts.DISPLAY_NAME},
+        new String[]{ ContactsContract.CommonDataKinds.GroupMembership.CONTACT_ID},
         ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID + "= ?" + " AND "
                 + ContactsContract.CommonDataKinds.GroupMembership.MIMETYPE + "='"
                 + ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE + "'",
@@ -38,7 +38,19 @@ public class SendMessage extends AppCompatActivity {
 
         if(groupCursor!=null){
             while(groupCursor.moveToNext()){
-                contacts.add(new Contact(groupCursor.getString(0), groupCursor.getString(1)));
+
+                String contactId = groupCursor.getString(0);
+                Cursor contactCursor = getContentResolver().query(
+                        ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+                        ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                        new String[] { contactId }, null);
+
+                if(contactCursor != null) {
+                    while(contactCursor.moveToNext()) {
+                        contacts.add(new Contact(contactId, contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)),  contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))));
+                    }
+                    contactCursor.close();
+                }
             }
             groupCursor.close();
         }

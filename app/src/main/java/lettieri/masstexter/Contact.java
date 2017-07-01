@@ -7,10 +7,12 @@ public class Contact
 {
     private String id;
     private String name;
+    private String phoneNumber;
 
-    public Contact(String id, String name) {
+    public Contact(String id, String name, String phoneNumber) {
         this.id = id;
         this.name = name;
+        this.phoneNumber = phoneNumber;
     }
 
     public String getId() {
@@ -23,6 +25,6 @@ public class Contact
 
     @Override
     public String toString() {
-        return id + " - " + name;
+        return id + " - " + name + " - " + phoneNumber;
     }
 }
