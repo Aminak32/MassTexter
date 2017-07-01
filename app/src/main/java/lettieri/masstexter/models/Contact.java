@@ -1,4 +1,4 @@
-package lettieri.masstexter;
+package lettieri.masstexter.models;
 
 import android.telephony.SmsManager;
 

@@ -1,4 +1,4 @@
-package lettieri.masstexter;
+package lettieri.masstexter.models;
 
 /**
  * Created by Luigi on 7/1/2017.

@@ -18,7 +18,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import lettieri.masstexter.Group;
+import lettieri.masstexter.models.Group;
 import lettieri.masstexter.R;
 
 public class MainActivity extends AppCompatActivity {

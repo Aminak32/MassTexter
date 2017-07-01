@@ -19,7 +19,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import lettieri.masstexter.Contact;
+import lettieri.masstexter.models.Contact;
 import lettieri.masstexter.R;
 
 public class SendMessage extends AppCompatActivity {
