@@ -1,7 +1,12 @@
 package lettieri.masstexter.activities;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -9,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -17,6 +23,10 @@ import lettieri.masstexter.R;
 
 public class SendMessage extends AppCompatActivity {
     public static final String EXTRA_GROUP_ID = "EXTRA_GROUP_ID";
+    // arbitrary number to determine which permission was granted
+    private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 466;
+    private static final int MY_PERMISSIONS_REQUEST_SEND_SMS = 467;
+
 
     private ArrayList<Contact> contacts = new ArrayList<>();
     private ArrayAdapter<Contact> adapter;
@@ -30,7 +40,15 @@ public class SendMessage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_message);
         findViews();
-        addContactsByGroup(getIntent().getStringExtra(EXTRA_GROUP_ID));
+
+        // this will only be called if the user is on this screen and then manually goes in and revokes permission to the read contacts (because they granted it on the previous screen
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_CONTACTS},
+                    MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+        } else {
+            addContactsByGroup();
+        }
         setUp();
     }
 
@@ -80,6 +98,13 @@ public class SendMessage extends AppCompatActivity {
     }
 
     /***
+     * Uses the group id of the intent
+     */
+    private void addContactsByGroup() {
+        addContactsByGroup(getIntent().getStringExtra(EXTRA_GROUP_ID));
+    }
+
+    /***
      * Given a group id it will query for the contact ids in that group
      * From that result it will query for users by id and add them to the objects contacts variable
      * @param groupId is the id of the group to add the users by
@@ -117,6 +142,22 @@ public class SendMessage extends AppCompatActivity {
                 contacts.add(new Contact(contactId, contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)),  contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))));
             }
             contactCursor.close();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch(requestCode) {
+            case MY_PERMISSIONS_REQUEST_READ_CONTACTS:
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    addContactsByGroup();
+                    adapter.notifyDataSetInvalidated();
+                } else {
+                    Toast.makeText(this, "This app requires contact permission, close the app and reopen to allow", Toast.LENGTH_LONG).show();
+                }
+                return;
         }
     }
 }
