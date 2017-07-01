@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import lettieri.masstexter.R;
 
 public class SendMessage extends AppCompatActivity {
     public static final String EXTRA_GROUP_ID = "EXTRA_GROUP_ID";
+    public static final String EXTRA_GROUP_NAME = "EXTRA_GROUP_NAME";
     // arbitrary number to determine which permission was granted
     private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 466;
     private static final int MY_PERMISSIONS_REQUEST_SEND_SMS = 467;
@@ -34,13 +36,15 @@ public class SendMessage extends AppCompatActivity {
     private ListView lstContacts;
     private Button btnSend;
     private EditText etMessage;
+    private TextView txtCount;
+    private TextView txtName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_message);
         findViews();
-
+        txtName.setText(getIntent().getStringExtra(EXTRA_GROUP_NAME));
         // this will only be called if the user is on this screen and then manually goes in and revokes permission to the read contacts (because they granted it on the previous screen
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
@@ -59,6 +63,8 @@ public class SendMessage extends AppCompatActivity {
         lstContacts = (ListView)findViewById(R.id.lstContacts);
         btnSend = (Button)findViewById(R.id.btnSend);
         etMessage = (EditText)findViewById(R.id.etMessage);
+        txtCount = (TextView)findViewById(R.id.txtCount);
+        txtName = (TextView)findViewById(R.id.txtName);
     }
 
     /***
@@ -130,6 +136,7 @@ public class SendMessage extends AppCompatActivity {
                 String contactId = contactInGroupCursor.getString(0);
                 addContactsById(contactId);
             }
+            updateCount();
             contactInGroupCursor.close();
         }
     }
@@ -175,5 +182,12 @@ public class SendMessage extends AppCompatActivity {
                 }
                 return;
         }
+    }
+
+    /***
+     * Sets the count to the size of the list of contacts surrounded by ()
+     */
+    private void updateCount() {
+        txtCount.setText("(" + contacts.size() + ")");
     }
 }

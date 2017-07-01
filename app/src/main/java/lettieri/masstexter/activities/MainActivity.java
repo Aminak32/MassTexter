@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
                 Group selected = (Group)lstGroups.getItemAtPosition(position);
                 Intent intent = new Intent(MainActivity.this, SendMessage.class);
                 intent.putExtra(SendMessage.EXTRA_GROUP_ID, selected.getId());
+                intent.putExtra(SendMessage.EXTRA_GROUP_NAME, selected.getName());
                 startActivity(intent);
             }
         });
