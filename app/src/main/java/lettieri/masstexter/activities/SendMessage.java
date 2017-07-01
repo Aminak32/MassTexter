@@ -82,9 +82,16 @@ public class SendMessage extends AppCompatActivity {
      * it then clears the edit text
      */
     private void sendMessage() {
-        String message = etMessage.getText().toString();
-        sendMessage(message);
-        etMessage.getText().clear();
+        // this will only be called if the user is on this screen and then manually goes in and revokes permission to the read contacts (because they granted it on the previous screen
+        if(ContextCompat.checkSelfPermission(SendMessage.this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(SendMessage.this,
+                    new String[]{Manifest.permission.SEND_SMS},
+                    MY_PERMISSIONS_REQUEST_SEND_SMS);
+        } else {
+            String message = etMessage.getText().toString();
+            sendMessage(message);
+            etMessage.getText().clear();
+        }
     }
 
     /***
@@ -156,6 +163,15 @@ public class SendMessage extends AppCompatActivity {
                     adapter.notifyDataSetInvalidated();
                 } else {
                     Toast.makeText(this, "This app requires contact permission, close the app and reopen to allow", Toast.LENGTH_LONG).show();
+                }
+                return;
+            case MY_PERMISSIONS_REQUEST_SEND_SMS:
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    sendMessage();
+                } else {
+                    Toast.makeText(this, "This app requires permission to send the message, try sending the message again and grant permission", Toast.LENGTH_LONG).show();
                 }
                 return;
         }
