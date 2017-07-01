@@ -17,13 +17,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Group Name"
-            android:textSize="72px"
-            android:id="@+id/txtName"/>
+            android:textSize="45dp"
+            android:id="@+id/txtName"
+            android:textStyle="bold"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="(0)"
-            android:textSize="72px"
+            android:textSize="36dp"
             android:paddingLeft="10dp"
             android:id="@+id/txtCount"/>
     </LinearLayout>
