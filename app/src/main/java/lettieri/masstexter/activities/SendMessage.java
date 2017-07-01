@@ -105,8 +105,12 @@ public class SendMessage extends AppCompatActivity {
      * @param message is the message to send to everyone
      */
     private void sendMessage(String message) {
-        for(Contact c: contacts) {
-            c.sendMessage(message);
+        if(message == null || message.isEmpty()) {
+            Toast.makeText(this, "Cannot send empty or null message", Toast.LENGTH_LONG).show();
+        } else {
+            for(Contact c: contacts) {
+                c.sendMessage(message);
+            }
         }
     }
 

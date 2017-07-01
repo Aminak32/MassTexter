@@ -51,8 +51,12 @@ public class Contact
      * Sends a text to this objects phone number with the given message
      * @param message
      */
-    public void sendMessage(String message) {
-        SmsManager.getDefault().sendTextMessage(getPhoneNumber(), null, message, null, null);
+    public boolean sendMessage(String message) {
+        if(message != null && !message.isEmpty()) {
+            SmsManager.getDefault().sendTextMessage(getPhoneNumber(), null, message, null, null);
+            return true;
+        }
+        return false;
     }
 
     @Override
