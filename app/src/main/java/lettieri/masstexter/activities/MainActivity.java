@@ -25,7 +25,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         findViews();
-//        SmsManager.getDefault().sendTextMessage("5555555555", null, "Hello world", null, null);
 
         Cursor groupCursor = getContentResolver().query(
                 ContactsContract.Groups.CONTENT_URI,
