@@ -24,22 +24,41 @@ public class MainActivity extends AppCompatActivity {
 //        }
 //        phones.close();
 
-        Cursor groups_cursor= getContentResolver().query(
-                ContactsContract.Groups.CONTENT_URI,
-                new String[]{
-                        ContactsContract.Groups._ID,
-                        ContactsContract.Groups.TITLE
-                }, null, null, null
-        );
+//        Cursor groups_cursor= getContentResolver().query(
+//                ContactsContract.Groups.CONTENT_URI,
+//                new String[]{
+//                        ContactsContract.Groups._ID,
+//                        ContactsContract.Groups.TITLE
+//                }, null, null, null
+//        );
+//
+//        if(groups_cursor!=null){
+//            while(groups_cursor.moveToNext()){
+//                String group_title = groups_cursor.getString(1);
+//                String id = groups_cursor.getString(0);
+//                // groups.put(id, group_title);
+//            Log.v("TOMTOM", group_title + " - " + id);
+//
+//            }
+//        }
 
-        if(groups_cursor!=null){
-            while(groups_cursor.moveToNext()){
-                String group_title = groups_cursor.getString(1);
-                String id = groups_cursor.getString(0);
+        Cursor groupCursor = getContentResolver().query(
+                ContactsContract.Data.CONTENT_URI,
+                new String[]{ ContactsContract.Contacts.DISPLAY_NAME, ContactsContract.CommonDataKinds.GroupMembership.CONTACT_ID },
+                ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID + "= ?" + " AND "
+                        + ContactsContract.CommonDataKinds.GroupMembership.MIMETYPE + "='"
+                        + ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE + "'",
+                new String[] { String.valueOf(24) }, null);
+
+        if(groupCursor!=null){
+            while(groupCursor.moveToNext()){
+                String group_title = groupCursor.getString(0);
+                String id = groupCursor.getString(1);
                 // groups.put(id, group_title);
             Log.v("TOMTOM", group_title + " - " + id);
 
             }
         }
+
     }
 }
