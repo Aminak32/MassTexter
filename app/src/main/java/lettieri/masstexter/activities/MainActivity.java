@@ -63,13 +63,26 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Group selected = (Group)lstGroups.getItemAtPosition(position);
                 Intent intent = new Intent(MainActivity.this, SendMessage.class);
-                intent.putExtra(SendMessage.EXTRA_GROUP_ID, selected.getId());
+                intent.putExtra(SendMessage.EXTRA_GROUP_IDS, selected.getIds());
                 intent.putExtra(SendMessage.EXTRA_GROUP_NAME, selected.getName());
                 startActivity(intent);
             }
         });
     }
 
+    /***
+     * Iterates through the groups and find the grouop with the given name, if none returns null
+     * @param name to search for
+     * @return group or null
+     */
+    private Group getGroupByName(String name) {
+        for(Group group: groups) {
+            if(group.getName().equals(name)) {
+                return group;
+            }
+        }
+        return null;
+    }
     /***
      * Add all groups in contacts to the list
      */
@@ -84,7 +97,18 @@ public class MainActivity extends AppCompatActivity {
 
         if(groupCursor!=null){
             while(groupCursor.moveToNext()){
-                groups.add(new Group(groupCursor.getString(0), groupCursor.getString(1)));
+                String id = groupCursor.getString(0);
+                String name = groupCursor.getString(1);
+
+                // Some groups can have multiple ids, so find by name and then add the id
+                Group g = getGroupByName(name);
+                if(g == null) {
+                    g = new Group(name);
+                    groups.add(g);
+                }
+
+                g.addId(id);
+
             }
             groupCursor.close();
         }

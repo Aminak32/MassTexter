@@ -23,7 +23,7 @@ import lettieri.masstexter.models.Contact;
 import lettieri.masstexter.R;
 
 public class SendMessage extends AppCompatActivity {
-    public static final String EXTRA_GROUP_ID = "EXTRA_GROUP_ID";
+    public static final String EXTRA_GROUP_IDS = "EXTRA_GROUP_IDS";
     public static final String EXTRA_GROUP_NAME = "EXTRA_GROUP_NAME";
     // arbitrary number to determine which permission was granted
     private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 466;
@@ -51,7 +51,7 @@ public class SendMessage extends AppCompatActivity {
                     new String[]{Manifest.permission.READ_CONTACTS},
                     MY_PERMISSIONS_REQUEST_READ_CONTACTS);
         } else {
-            addContactsByGroup();
+            addContactsByGroups();
         }
         setUp();
     }
@@ -117,8 +117,11 @@ public class SendMessage extends AppCompatActivity {
     /***
      * Uses the group id of the intent
      */
-    private void addContactsByGroup() {
-        addContactsByGroup(getIntent().getStringExtra(EXTRA_GROUP_ID));
+    private void addContactsByGroups() {
+        ArrayList<String> ids = getIntent().getStringArrayListExtra(EXTRA_GROUP_IDS);
+        for(String id: ids) {
+            addContactsByGroup(id);
+        }
     }
 
     /***
@@ -170,7 +173,7 @@ public class SendMessage extends AppCompatActivity {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    addContactsByGroup();
+                    addContactsByGroups();
                     adapter.notifyDataSetInvalidated();
                 } else {
                     Toast.makeText(this, "This app requires contact permission, close the app and reopen to allow", Toast.LENGTH_LONG).show();
